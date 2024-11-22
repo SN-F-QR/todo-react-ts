@@ -6,6 +6,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { get, post } from "../utilities";
 import NotFound from "./pages/NotFound";
 import Skeleton from "./pages/Skeleton";
+import Todo from "./pages/Todo";
 import { socket } from "../client-socket";
 import User from "../../../shared/User";
 import "../utilities.css";
@@ -52,8 +53,9 @@ const App = () => {
           element={
             <Skeleton handleLogin={handleLogin} handleLogout={handleLogout} userId={userId} />
           }
-          path="/"
+          path="/skeleton"
         />
+        <Route element={<Todo />} path="/" />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

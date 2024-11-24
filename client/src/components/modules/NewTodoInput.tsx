@@ -14,15 +14,15 @@ const NewTextInput = () => {
   };
 
   return (
-    <div className="space-x-2">
+    <div className="space-x-2 p-2">
       <input
-        className="bg-gray-100 rounded-2xl border-5 border-gray-400 focus:outline-none focus:ring focus:border-blue500 "
+        className="rounded-md py-1 border-2 focus:outline-blue500 border-gray-400 bg-gray-100 focus:outline-none focus:ring"
         type="text"
         value={value}
         onChange={handleChange}
       />
       <button
-        className="rounded-2xl border-3 border-solid border-slate-300 "
+        className="rounded-md border-2 border-solid border-black border-opacity-40 py-1 px-3"
         type="submit"
         onClick={handleSubmit}
         value="Add"

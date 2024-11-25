@@ -55,3 +55,8 @@ export const post = (endpoint: string, params: object = {}) => {
       throw `POST request to ${endpoint} failed with error:\n${error}`;
     });
 };
+
+// Some functions for font-end to use
+export const generateId = () => {
+  return Date.now().toString(16) + Math.random().toString(16).substring(2);
+};

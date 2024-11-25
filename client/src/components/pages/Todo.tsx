@@ -55,26 +55,28 @@ const Todo = () => {
     }
   };
 
-  return (
-    <div>
-      <h3 className="text-red-600 py-1 px-5">Who's To-dos</h3>
-      {todos ? (
-        <ul>
-          {todos.map((task: Task, index: number) => (
-            <TodoItem
-              _id={task._id}
-              content={task.content}
-              finished={task.finished}
-              updateFinished={updateTodo}
-              deleteTodo={deleteTodo}
-              key={index}
-            ></TodoItem>
-          ))}
-        </ul>
-      ) : (
-        <p className="italic font-semibold">Empty! Add a new TODO now~</p>
-      )}
+  let todoLists: React.JSX.Element[] = [
+    <p className="italic font-semibold">Empty! Add a new TODO now~</p>,
+  ];
+  if (todos && todos.length > 0) {
+    todoLists = todos.map((task: Task, index: number) => (
+      <TodoItem
+        _id={task._id}
+        content={task.content}
+        finished={task.finished}
+        updateFinished={updateTodo}
+        deleteTodo={deleteTodo}
+        key={index}
+      ></TodoItem>
+    ));
+  } else {
+    todoLists = [<p className="italic font-semibold">Empty! Add a new TODO now~</p>];
+  }
 
+  return (
+    <div className="flex flex-col h-screen items-center justify-center gap-y-3">
+      <h3 className="text-orange-400 py-1 px-5 font-bold text-3xl">Who's To-dos</h3>
+      {todoLists}
       <NewTodoInput addTodo={addNewTodo}></NewTodoInput>
     </div>
   );

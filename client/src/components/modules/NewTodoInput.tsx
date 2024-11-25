@@ -32,7 +32,7 @@ const NewTextInput = (props: Prop) => {
   };
 
   return (
-    <div className="space-x-1 p-5">
+    <div className="space-x-9 p-3">
       <input
         className="py-2 px-3 border-2 focus:outline-blue500 rounded-full border-gray-400 bg-gray-100 focus:outline-none focus:ring placeholder:italic text-base shadow-md"
         type="text"

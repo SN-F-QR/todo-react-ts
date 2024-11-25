@@ -36,6 +36,19 @@ const Todo = () => {
     todos ? setTodos([...todos, newTodo]) : setTodos([newTodo]);
   };
 
+  const updateTodo = (id: string, finished: boolean) => {
+    if (todos) {
+      setTodos(
+        todos.map((task) => {
+          if (task._id === id) {
+            return { ...task, finished: finished };
+          }
+          return task;
+        })
+      );
+    }
+  };
+
   const deleteTodo = (id: string) => {
     if (todos) {
       setTodos(todos.filter((task) => task._id !== id));
@@ -52,6 +65,7 @@ const Todo = () => {
               _id={task._id}
               content={task.content}
               finished={task.finished}
+              updateFinished={updateTodo}
               deleteTodo={deleteTodo}
               key={index}
             ></TodoItem>

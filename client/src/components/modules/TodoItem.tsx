@@ -18,7 +18,6 @@ const TodoItem = (props: Props) => {
     <div>
       <input type="checkbox" checked={finished} onChange={(e) => setFinished(e.target.checked)} />
       <label>{props.content}</label>
-      <div>Delete</div>
     </div>
   );
 };

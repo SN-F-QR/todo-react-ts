@@ -1,23 +1,38 @@
-import { OAuth2Client, TokenPayload } from "google-auth-library";
+import { OAuth2Client, TokenPayload, TokenInfo } from "google-auth-library";
 import { NextFunction, Request, Response } from "express";
 import User from "./models/User";
 import UserInterface from "../shared/User";
+import jwtDecode from "jwt-decode";
+import dotenv from "dotenv";
+
+dotenv.config({});
 
 // create a new OAuth client used to verify google sign-in
 //    TODO: replace with your own CLIENT_ID
-const CLIENT_ID = "FILL ME IN";
-const client = new OAuth2Client(CLIENT_ID);
+const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+const client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, "http://localhost:5050");
 
-const verify = (token: string) => {
+const verify = (code: string) => {
+  console.log(`Verifying code: ${code}`);
+  console.log(`Client ID: ${CLIENT_ID}`);
   return client
-    .verifyIdToken({
-      idToken: token,
-      audience: CLIENT_ID,
+    .getToken(code)
+    .then((tokenResponse) => {
+      // client.setCredentials(tokenResponse.tokens); // get assess token (opaque)
+      // see tokenResponse.tokens here https://googleapis.dev/nodejs/google-auth-library/5.4.1/interfaces/Credentials.html
+      console.log(tokenResponse.tokens);
+      if (tokenResponse.tokens.id_token) {
+        // retrieve user info from access token
+        return jwtDecode(tokenResponse.tokens.id_token as string) as { name: string; sub: string };
+      }
     })
-    .then((ticket) => ticket.getPayload());
+    .catch((err) => {
+      console.log(`Error verifying code: ${err}`);
+    });
 };
 
-const getOrCreateUser = (user: TokenPayload) => {
+const getOrCreateUser = (user: { name: string; sub: string }) => {
   return User.findOne({ googleid: user.sub }).then(
     (existingUser: UserInterface | null | undefined) => {
       if (existingUser !== null && existingUser !== undefined) return existingUser;
@@ -31,9 +46,10 @@ const getOrCreateUser = (user: TokenPayload) => {
 };
 
 const login = (req: Request, res: Response) => {
-  verify(req.body.token)
+  verify(req.body.code)
     .then((user) => {
       if (user === undefined) return;
+      console.log(`User sub: ${user.sub}`);
       return getOrCreateUser(user);
     })
     .then((user) => {

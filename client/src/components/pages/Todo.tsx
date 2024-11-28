@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import TodoItem from "../modules/TodoItem";
 import { NewTodoInput } from "../modules/NewTodoInput";
 import { generateId } from "../../utilities";
+import { useGoogleLogin, CodeResponse } from "@react-oauth/google";
 
 type Task = {
   _id: string;
@@ -24,7 +25,13 @@ const example: Tasks = Array<Task>(
   }
 );
 
-const Todo = () => {
+type Props = {
+  userId?: string;
+  handleLogin: (codeResponse: CodeResponse) => void;
+  handleLogout: () => void;
+};
+
+const Todo = (props: Props) => {
   const [todos, setTodos] = useState<Tasks | undefined>(example);
 
   const addNewTodo = (content: string) => {
@@ -55,6 +62,13 @@ const Todo = () => {
     }
   };
 
+  // useGoogleLogin is a hook that returns a function that can be called to start the login flow
+  // thus there is no need to define login as a "function"
+  const login = useGoogleLogin({
+    flow: "auth-code",
+    onSuccess: props.handleLogin,
+  });
+
   let todoLists: React.JSX.Element[] = [
     <p className="italic font-semibold">Empty! Add a new TODO now~</p>,
   ];
@@ -76,6 +90,11 @@ const Todo = () => {
   return (
     <div className="flex flex-col h-screen items-center justify-center gap-y-3">
       <h3 className="text-orange-400 py-1 px-5 font-bold text-3xl">Who's To-dos</h3>
+      {props.userId ? (
+        <button onClick={props.handleLogout}>Logout</button>
+      ) : (
+        <button onClick={login}>Login</button>
+      )}
       {todoLists}
       <NewTodoInput addTodo={addNewTodo}></NewTodoInput>
     </div>

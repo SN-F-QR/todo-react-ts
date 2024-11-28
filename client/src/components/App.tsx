@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import jwt_decode from "jwt-decode";
-import { CredentialResponse } from "@react-oauth/google";
+import { CodeResponse, CredentialResponse, useGoogleLogin } from "@react-oauth/google";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import { get, post } from "../utilities";
@@ -29,14 +29,23 @@ const App = () => {
       );
   }, []);
 
-  const handleLogin = (credentialResponse: CredentialResponse) => {
-    const userToken = credentialResponse.credential;
-    const decodedCredential = jwt_decode(userToken as string) as { name: string; email: string };
-    console.log(`Logged in as ${decodedCredential.name}`);
-    post("/api/login", { token: userToken }).then((user) => {
+  // const handleLogin = (credentialResponse: CredentialResponse) => {
+  //   const userToken = credentialResponse.credential;
+  //   const decodedCredential = jwt_decode(userToken as string) as { name: string; email: string };
+  //   console.log(`Logged in as ${decodedCredential.name}`);
+  //   post("/api/login", { token: userToken }).then((user) => {
+  //     setUserId(user._id);
+  //     post("/api/initsocket", { socketid: socket.id });
+  //   });
+  // };
+
+  const handleLogin = (codeResponse: CodeResponse) => {
+    const userCode = codeResponse.code;
+    post("/api/login", { code: userCode }).then((user) => {
       setUserId(user._id);
       post("/api/initsocket", { socketid: socket.id });
     });
+    console.log(`Logged in as `);
   };
 
   const handleLogout = () => {
@@ -50,12 +59,9 @@ const App = () => {
     <BrowserRouter>
       <Routes>
         <Route
-          element={
-            <Skeleton handleLogin={handleLogin} handleLogout={handleLogout} userId={userId} />
-          }
-          path="/skeleton"
+          element={<Todo userId={userId} handleLogin={handleLogin} handleLogout={handleLogout} />}
+          path="/"
         />
-        <Route element={<Todo />} path="/" />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

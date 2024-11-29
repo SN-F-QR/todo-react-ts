@@ -1,23 +1,20 @@
 import React, { useState } from "react";
-
+import { Task as TaskDocument } from "../../../../shared/types";
 /**
  * Component to render a todo item
- * @param _id of todo
- * @param content of todo
- * @param finished state of todo
+ * @param task data for the todo item
+ * @param updateFinished when user checks/unchecks the checkbox
  * @param deleteTodo
  */
 type Props = {
-  _id: string;
-  content: string;
-  finished: boolean;
+  task: TaskDocument;
   updateFinished: (id: string, finished: boolean) => void;
   deleteTodo: (id: string) => void;
 };
 
 const TodoItem = (props: Props) => {
   const handleEvent = () => {
-    props.deleteTodo(props._id);
+    props.deleteTodo(props.task.creator_id);
   };
 
   return (
@@ -25,11 +22,13 @@ const TodoItem = (props: Props) => {
       <input
         className="w-4 h-4 place-self-center"
         type="checkbox"
-        checked={props.finished}
-        onChange={(e) => props.updateFinished(props._id, e.target.checked)}
+        checked={props.task.finished}
+        onChange={(e) => props.updateFinished(props.task.creator_id, e.target.checked)}
       />
-      <label className={`${props.finished ? "line-through" : ""} min-w-52 place-self-center px-1 `}>
-        {props.content}
+      <label
+        className={`${props.task.finished ? "line-through" : ""} min-w-52 place-self-center px-1 `}
+      >
+        {props.task.title}
       </label>
       <button className="border rounded-full w-6" onClick={handleEvent}>
         X

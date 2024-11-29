@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import jwt_decode from "jwt-decode";
 import { CodeResponse, CredentialResponse, useGoogleLogin } from "@react-oauth/google";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
@@ -29,19 +28,14 @@ const App = () => {
       );
   }, []);
 
-  // const handleLogin = (credentialResponse: CredentialResponse) => {
-  //   const userToken = credentialResponse.credential;
-  //   const decodedCredential = jwt_decode(userToken as string) as { name: string; email: string };
-  //   console.log(`Logged in as ${decodedCredential.name}`);
-  //   post("/api/login", { token: userToken }).then((user) => {
-  //     setUserId(user._id);
-  //     post("/api/initsocket", { socketid: socket.id });
-  //   });
-  // };
-
+  /**
+   * Get user's code from Google OAuth and send to server for exchange of token
+   * Called by useGoogleLogin
+   * @param codeResponse response from Google OAuth containing user's code
+   */
   const handleLogin = (codeResponse: CodeResponse) => {
     const userCode = codeResponse.code;
-    post("/api/login", { code: userCode }).then((user) => {
+    post("/api/login", { code: userCode }).then((user: User) => {
       setUserId(user._id);
       post("/api/initsocket", { socketid: socket.id });
     });

@@ -1,14 +1,32 @@
 import React, { useState } from "react";
+import { Task as TaskDocument } from "../../../../shared/types";
+import { post } from "../../utilities";
+
+type TaskData = {
+  title: string;
+  finished: boolean;
+};
 
 /**
  * Component to create a new todo
  * @param {function} addTodo update the todo lists when adding
  */
 type NewTodoProps = {
-  addTodo: (text: string) => void;
+  addTodo: (todo: TaskDocument) => void;
 };
 export const NewTodoInput = (props: NewTodoProps) => {
-  return <NewTextInput defaultText="Create Todos..." onSubmit={props.addTodo} />;
+  const postNewTodo = (text: string) => {
+    const newTodo: TaskData = {
+      title: text,
+      finished: false,
+    };
+    const postTodo = async (newTodo: TaskData) => {
+      const newTodoDocument: TaskDocument = await post("/api/todo", newTodo);
+      props.addTodo(newTodoDocument);
+    };
+    postTodo(newTodo);
+  };
+  return <NewTextInput defaultText="Create Todos..." onSubmit={postNewTodo} />;
 };
 
 /**

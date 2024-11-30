@@ -68,6 +68,18 @@ router.put("/todo/:id", auth.ensureLoggedIn, (req, res) => {
   updateTodo();
 });
 
+router.delete("/todo/:id", auth.ensureLoggedIn, (req, res) => {
+  const deleteTodo = async () => {
+    try {
+      await Task.deleteOne({ _id: req.params.id });
+      return res.status(200).send({});
+    } catch (err) {
+      return res.status(500).json({ error: "Failed to delete todo" });
+    }
+  };
+  deleteTodo();
+});
+
 // anything else falls to this "not found" case
 router.all("*", (req, res) => {
   const msg = `Api route not found: ${req.method} ${req.url}`;

@@ -3,7 +3,7 @@ import TodoItem from "../modules/TodoItem";
 import { NewTodoInput } from "../modules/NewTodoInput";
 import { generateId } from "../../utilities";
 import { useGoogleLogin, CodeResponse } from "@react-oauth/google";
-import { get, post, put } from "../../utilities";
+import { get, post, put, del } from "../../utilities";
 import { Task as TaskDocument } from "../../../../shared/types";
 
 type Tasks = Array<TaskDocument>; // remember the TaskDocument extends from Document of mongoose
@@ -49,9 +49,17 @@ const Todo = (props: Props) => {
     }
   };
 
-  const deleteTodo = (id: string) => {
-    if (todos) {
+  const deleteTodo = async (id: string) => {
+    if (!todos) {
+      return;
+    }
+    const savedTasks: Tasks = [...todos];
+    try {
       setTodos(todos.filter((task) => task._id !== id));
+      await del(`/api/todo/${id}`);
+    } catch (err) {
+      setTodos(savedTasks);
+      console.error(`Failed to delete todo with the following error: ${err}`);
     }
   };
 

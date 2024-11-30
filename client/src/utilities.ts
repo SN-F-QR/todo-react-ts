@@ -56,6 +56,20 @@ export const post = (endpoint: string, params: object = {}) => {
     });
 };
 
+// Helper code to make a put request. Default parameter of empty JSON Object for params.
+// Returns a Promise to a JSON Object.
+export const put = (endpoint: string, params: object = {}) => {
+  return fetch(endpoint, {
+    method: "put",
+    headers: { "Content-type": "application/json" },
+    body: JSON.stringify(params),
+  })
+    .then(convertToJSON)
+    .catch((error) => {
+      throw `PUT request to ${endpoint} failed with error:\n${error}`;
+    });
+};
+
 // Some functions for font-end to use
 export const generateId = () => {
   return Date.now().toString(16) + Math.random().toString(16).substring(2);

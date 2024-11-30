@@ -3,7 +3,7 @@ import TodoItem from "../modules/TodoItem";
 import { NewTodoInput } from "../modules/NewTodoInput";
 import { generateId } from "../../utilities";
 import { useGoogleLogin, CodeResponse } from "@react-oauth/google";
-import { get, post } from "../../utilities";
+import { get, post, put } from "../../utilities";
 import { Task as TaskDocument } from "../../../../shared/types";
 
 type Tasks = Array<TaskDocument>; // remember the TaskDocument extends from Document of mongoose
@@ -21,16 +21,31 @@ const Todo = (props: Props) => {
     todos ? setTodos([...todos, newTodo]) : setTodos([newTodo]);
   };
 
-  const updateTodo = (id: string, finished: boolean) => {
-    if (todos) {
+  const updateTodo = (id: string, finished: boolean, title?: string) => {
+    if (!todos) return;
+    const savedTasks: Tasks = [...todos];
+    try {
+      // update the task with defined data, keep undefined data as origin
+      const targetTask = todos.find((task) => task._id === id);
+      if (!targetTask) return;
+      const updateData = {
+        title: title || targetTask.title,
+        finished: finished,
+      };
       setTodos(
         todos.map((task: TaskDocument): TaskDocument => {
           if (task._id === id) {
-            task.finished = finished;
+            Object.keys(updateData).forEach((key) => {
+              task[key] = updateData[key];
+            });
           }
           return task;
         })
       );
+      put(`/api/todo/${id}`, updateData);
+    } catch (error) {
+      console.error("Failed to update todo with the following error: ", error);
+      setTodos(savedTasks);
     }
   };
 

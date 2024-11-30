@@ -41,11 +41,31 @@ router.post("/todo", auth.ensureLoggedIn, (req, res) => {
     date: Date.now(),
   });
 
-  const addTodo = async () => {
+  const addTodo = async (newTask: TaskInterface) => {
     const task: TaskInterface | null = await newTask.save();
     return res.send(task);
   };
-  addTodo();
+  addTodo(newTask);
+});
+
+router.put("/todo/:id", auth.ensureLoggedIn, (req, res) => {
+  const revisedTask = {
+    title: req.body.title,
+    finished: req.body.finished,
+  };
+  const updateTodo = async () => {
+    try {
+      const task: TaskInterface | null = await Task.findOneAndUpdate(
+        { _id: req.params.id },
+        revisedTask,
+        { new: true }
+      );
+      return res.status(200).json(task);
+    } catch (err) {
+      return res.status(500).json({ error: "Failed to update todo" });
+    }
+  };
+  updateTodo();
 });
 
 // anything else falls to this "not found" case

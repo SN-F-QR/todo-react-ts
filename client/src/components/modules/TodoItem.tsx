@@ -13,8 +13,8 @@ type Props = {
 };
 
 const TodoItem = (props: Props) => {
-  const handleEvent = () => {
-    props.deleteTodo(props.task.creator_id);
+  const handleDeleteEvent = () => {
+    props.deleteTodo(props.task._id);
   };
 
   return (
@@ -23,14 +23,14 @@ const TodoItem = (props: Props) => {
         className="w-4 h-4 place-self-center"
         type="checkbox"
         checked={props.task.finished}
-        onChange={(e) => props.updateFinished(props.task.creator_id, e.target.checked)}
+        onChange={(e) => props.updateFinished(props.task._id, e.target.checked)}
       />
       <label
         className={`${props.task.finished ? "line-through" : ""} min-w-52 place-self-center px-1 `}
       >
         {props.task.title}
       </label>
-      <button className="border rounded-full w-6" onClick={handleEvent}>
+      <button className="border rounded-full w-6" onClick={handleDeleteEvent}>
         X
       </button>
     </div>

@@ -25,7 +25,7 @@ const Todo = (props: Props) => {
     if (todos) {
       setTodos(
         todos.map((task: TaskDocument): TaskDocument => {
-          if (task.creator_id === id) {
+          if (task._id === id) {
             task.finished = finished;
           }
           return task;
@@ -36,7 +36,7 @@ const Todo = (props: Props) => {
 
   const deleteTodo = (id: string) => {
     if (todos) {
-      setTodos(todos.filter((task) => task.creator_id !== id));
+      setTodos(todos.filter((task) => task._id !== id));
     }
   };
 

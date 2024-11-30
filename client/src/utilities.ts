@@ -70,6 +70,17 @@ export const put = (endpoint: string, params: object = {}) => {
     });
 };
 
+export const del = (endpoint: string) => {
+  return fetch(endpoint, {
+    method: "delete",
+    headers: { "Content-type": "application/json" },
+  })
+    .then(convertToJSON)
+    .catch((error) => {
+      throw `DELETE request to ${endpoint} failed with error:\n${error}`;
+    });
+};
+
 // Some functions for font-end to use
 export const generateId = () => {
   return Date.now().toString(16) + Math.random().toString(16).substring(2);

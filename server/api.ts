@@ -25,12 +25,13 @@ router.post("/initsocket", (req, res) => {
   res.send({});
 });
 
-router.get("/todos", auth.ensureLoggedIn, (req, res) => {
-  const getTodos = async (userID: string) => {
-    const todos: TaskInterface[] | null = await Task.find({ creator_id: userID });
+router.get("/todos", auth.ensureLoggedIn, async (req, res) => {
+  try {
+    const todos: TaskInterface[] | null = await Task.find({ creator_id: req.user!._id });
     return res.send(todos); // return TaskInterface[] instead of mere data
-  };
-  getTodos(req.user!._id);
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to get todos" });
+  }
 });
 
 router.post("/todo", auth.ensureLoggedIn, (req, res) => {
@@ -48,36 +49,31 @@ router.post("/todo", auth.ensureLoggedIn, (req, res) => {
   addTodo(newTask);
 });
 
-router.put("/todo/:id", auth.ensureLoggedIn, (req, res) => {
+router.put("/todo/:id", auth.ensureLoggedIn, async (req, res) => {
   const revisedTask = {
     title: req.body.title,
     finished: req.body.finished,
   };
-  const updateTodo = async () => {
-    try {
-      const task: TaskInterface | null = await Task.findOneAndUpdate(
-        { _id: req.params.id },
-        revisedTask,
-        { new: true }
-      );
-      return res.status(200).json(task);
-    } catch (err) {
-      return res.status(500).json({ error: "Failed to update todo" });
-    }
-  };
-  updateTodo();
+
+  try {
+    const task: TaskInterface | null = await Task.findOneAndUpdate(
+      { _id: req.params.id },
+      revisedTask,
+      { new: true }
+    );
+    return res.status(200).json(task);
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to update todo" });
+  }
 });
 
-router.delete("/todo/:id", auth.ensureLoggedIn, (req, res) => {
-  const deleteTodo = async () => {
-    try {
-      await Task.deleteOne({ _id: req.params.id });
-      return res.status(200).send({});
-    } catch (err) {
-      return res.status(500).json({ error: "Failed to delete todo" });
-    }
-  };
-  deleteTodo();
+router.delete("/todo/:id", auth.ensureLoggedIn, async (req, res) => {
+  try {
+    await Task.deleteOne({ _id: req.params.id });
+    return res.status(200).send({});
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to delete todo" });
+  }
 });
 
 // anything else falls to this "not found" case

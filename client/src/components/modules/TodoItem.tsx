@@ -18,20 +18,18 @@ const TodoItem = (props: Props) => {
   };
 
   return (
-    <div className="py-2 px-5 space-x-1 border rounded-full bg-gray-100 border-gray-400 flex shadow-md">
+    <div className="flex space-x-1 px-5 py-1">
       <input
-        className="w-4 h-4 place-self-center"
+        className="h-4 w-4 place-self-center"
         type="checkbox"
         checked={props.task.finished}
         onChange={(e) => props.updateFinished(props.task._id, e.target.checked)}
       />
-      <label
-        className={`${props.task.finished ? "line-through" : ""} min-w-52 place-self-center px-1 `}
-      >
+      <label className={`${props.task.finished ? "line-through" : ""} min-w-52 grow px-1`}>
         {props.task.title}
       </label>
-      <button className="border rounded-full w-6" onClick={handleDeleteEvent}>
-        X
+      <button className="w-6" onClick={handleDeleteEvent}>
+        🗑️
       </button>
     </div>
   );

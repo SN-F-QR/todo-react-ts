@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import TodoItem from "../modules/TodoItem";
 import { NewTodoInput } from "../modules/NewTodoInput";
-import { generateId } from "../../utilities";
-import { useGoogleLogin, CodeResponse } from "@react-oauth/google";
 import { get, post, put, del } from "../../utilities";
 import { Task as TaskDocument } from "../../../../shared/types";
 
@@ -10,8 +8,6 @@ type Tasks = Array<TaskDocument>; // remember the TaskDocument extends from Docu
 
 type Props = {
   userId?: string;
-  handleLogin: (codeResponse: CodeResponse) => void;
-  handleLogout: () => void;
 };
 
 const Todo = (props: Props) => {
@@ -72,13 +68,6 @@ const Todo = (props: Props) => {
     }
   }, [props.userId]);
 
-  // useGoogleLogin is a hook that returns a function that can be called to start the login flow
-  // thus there is no need to define login as a "function"
-  const login = useGoogleLogin({
-    flow: "auth-code",
-    onSuccess: props.handleLogin,
-  });
-
   const emptyList: React.JSX.Element = (
     <p className="italic font-semibold">Empty! Add a new TODO now~</p>
   );
@@ -98,17 +87,17 @@ const Todo = (props: Props) => {
 
   return (
     <div className="flex flex-col h-screen items-center justify-center gap-y-3">
-      <h3 className="text-orange-400 py-1 px-5 font-bold text-3xl">Who's To-dos</h3>
       {props.userId ? (
         <>
-          <button className="pb-1" onClick={props.handleLogout}>
-            Logout
-          </button>
-          {todoLists}
+          <div className="rounded-md border border-gray-300">
+            <h3 className="text-wrap px-5 mt-1 text-lg font-semibold text-blue-300">Study</h3>
+            <div className="mx-5 h-[1px]  bg-gray-300"></div>
+            {todoLists}
+          </div>
           <NewTodoInput addTodo={addNewTodo}></NewTodoInput>
         </>
       ) : (
-        <button onClick={login}>Login</button>
+        <p className="italic font-semibold">Login to see your todos~</p>
       )}
     </div>
   );

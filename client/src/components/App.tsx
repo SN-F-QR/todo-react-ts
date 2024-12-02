@@ -4,8 +4,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import { get, post } from "../utilities";
 import NotFound from "./pages/NotFound";
-import Skeleton from "./pages/Skeleton";
 import Todo from "./pages/Todo";
+import SideBar from "./modules/SideBar";
 import { socket } from "../client-socket";
 import User from "../../../shared/User";
 import "../utilities.css";
@@ -51,13 +51,15 @@ const App = () => {
   // All the pages need to have the props extended via RouteComponentProps for @reach/router to work properly. Please use the Skeleton as an example.
   return (
     <BrowserRouter>
-      <Routes>
-        <Route
-          element={<Todo userId={userId} handleLogin={handleLogin} handleLogout={handleLogout} />}
-          path="/"
-        />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <div className="flex min-h-screen">
+        <SideBar userId={userId} handleLogin={handleLogin} handleLogout={handleLogout} />
+        <div className="ml-48 w-full flex-auto flex-col gap-3 overflow-y-auto py-1 pl-1 pr-2">
+          <Routes>
+            <Route element={<Todo userId={userId} />} path="/" />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
+      </div>
     </BrowserRouter>
   );
 };

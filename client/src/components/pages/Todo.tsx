@@ -86,12 +86,13 @@ const Todo = (props: Props) => {
   }
 
   return (
-    <div className="flex flex-col h-screen items-center justify-center gap-y-3">
+    <div className="min-h-full p-1 flex flex-col">
       {props.userId ? (
         <>
-          <div className="rounded-md border border-gray-300">
-            <h3 className="text-wrap px-5 mt-1 text-lg font-semibold text-blue-300">Study</h3>
+          <div className="flex-col">
+            <h3 className="text-wrap py-1 px-5 mt-1 text-lg font-semibold text-blue-300">Study</h3>
             <div className="mx-5 h-[1px]  bg-gray-300"></div>
+            <div className="pb-2"></div>
             {todoLists}
           </div>
           <NewTodoInput addTodo={addNewTodo}></NewTodoInput>

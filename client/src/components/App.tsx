@@ -53,7 +53,7 @@ const App = () => {
     <BrowserRouter>
       <div className="flex min-h-screen">
         <SideBar userId={userId} handleLogin={handleLogin} handleLogout={handleLogout} />
-        <div className="ml-48 w-full flex-auto flex-col gap-3 overflow-y-auto py-1 pl-1 pr-2">
+        <div className="ml-48 w-full flex-auto flex-col gap-3 overflow-y-auto pt-5 px-20">
           <Routes>
             <Route element={<Todo userId={userId} />} path="/" />
             <Route path="*" element={<NotFound />} />

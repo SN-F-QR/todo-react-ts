@@ -90,12 +90,18 @@ const Todo = (props: Props) => {
       {props.userId ? (
         <>
           <div className="flex-col">
-            <h3 className="text-wrap py-1 px-5 mt-1 text-lg font-semibold text-blue-300">Study</h3>
-            <div className="mx-5 h-[1px]  bg-gray-300"></div>
+            <div className="flex py-1 px-5 mt-1 text-lg font-semibold text-blue-300">
+              <h3 className="text-wrap ">Study</h3>
+              <div className="flex ml-auto mr-1 space-x-3 items-center text-nowrap">
+                <p>+</p>
+                <p>...</p>
+              </div>
+            </div>
+            <div className="mx-5 h-[1px] bg-gray-300"></div>
             <div className="pb-2"></div>
             {todoLists}
+            <NewTodoInput addTodo={addNewTodo}></NewTodoInput>
           </div>
-          <NewTodoInput addTodo={addNewTodo}></NewTodoInput>
         </>
       ) : (
         <p className="italic font-semibold">Login to see your todos~</p>

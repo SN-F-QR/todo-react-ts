@@ -50,17 +50,18 @@ const NewTextInput = (props: Prop) => {
   };
 
   return (
-    <div className="grow flex-col place-content-end">
-      <div className="space-x-5 p-3">
+    <div className="">
+      <div className="flex px-5 py-3 justify-between space-x-1 items-center h-4">
+        <button className="border border-dotted border-black h-4 w-4 hover:cursor-default"></button>
         <input
-          className="py-1 px-3 border-2 focus:outline-blue500 rounded-full border-gray-400 bg-gray-100 focus:outline-none focus:ring placeholder:italic text-base shadow-md"
+          className="px-1 grow border-b focus:outline-blue500 focus:outline-none placeholder:italic text-base"
           type="text"
           value={value}
           placeholder={props.defaultText}
           onChange={handleChange}
         />
         <button
-          className="border-2 rounded-full border-solid border-black border-opacity-40 py-1 px-5 shadow-md"
+          className="h-6 border rounded-lg border-solid border-gray-300 px-2 shadow-md text-green-400 hover:text-green-600"
           type="submit"
           onClick={handleSubmit}
           value="Add"

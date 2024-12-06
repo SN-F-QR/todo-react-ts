@@ -52,7 +52,7 @@ const NewTextInput = (props: Prop) => {
   return (
     <div className="">
       <div className="flex px-5 py-3 justify-between space-x-1 items-center h-4">
-        <button className="border border-dotted border-black h-4 w-4 hover:cursor-default"></button>
+        <button className="border border-dotted border-black rounded-sm h-4 w-4 hover:cursor-default"></button>
         <input
           className="px-1 grow border-b focus:outline-blue500 focus:outline-none placeholder:italic text-base"
           type="text"

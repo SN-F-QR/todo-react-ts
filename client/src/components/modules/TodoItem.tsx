@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Task as TaskDocument } from "../../../../shared/types";
 /**
  * Component to render a todo item

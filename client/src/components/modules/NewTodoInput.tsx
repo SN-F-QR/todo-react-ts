@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { forwardRef, useRef, useState } from "react";
 import { Task as TaskDocument } from "../../../../shared/types";
 import { post } from "../../utilities";
 
@@ -14,20 +14,22 @@ type TaskData = {
 type NewTodoProps = {
   addTodo: (todo: TaskDocument) => void;
 };
-export const NewTodoInput = (props: NewTodoProps) => {
-  const postNewTodo = (text: string) => {
-    const newTodo: TaskData = {
-      title: text,
-      finished: false,
+export const NewTodoInput = forwardRef(
+  (props: NewTodoProps, ref: React.ForwardedRef<HTMLInputElement | null>) => {
+    const postNewTodo = (text: string) => {
+      const newTodo: TaskData = {
+        title: text,
+        finished: false,
+      };
+      const postTodo = async (newTodo: TaskData) => {
+        const newTodoDocument: TaskDocument = await post("/api/todo", newTodo);
+        props.addTodo(newTodoDocument);
+      };
+      postTodo(newTodo);
     };
-    const postTodo = async (newTodo: TaskData) => {
-      const newTodoDocument: TaskDocument = await post("/api/todo", newTodo);
-      props.addTodo(newTodoDocument);
-    };
-    postTodo(newTodo);
-  };
-  return <NewTextInput defaultText="Create Todos..." onSubmit={postNewTodo} />;
-};
+    return <NewTextInput ref={ref} defaultText="Create Todos..." onSubmit={postNewTodo} />;
+  }
+);
 
 /**
  * Component to render a new text input
@@ -38,7 +40,7 @@ type Prop = {
   defaultText: string;
   onSubmit: (text: string) => void;
 };
-const NewTextInput = (props: Prop) => {
+const NewTextInput = forwardRef((props: Prop, ref: React.ForwardedRef<HTMLInputElement | null>) => {
   const [value, setValue] = useState<string>("");
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
@@ -56,6 +58,7 @@ const NewTextInput = (props: Prop) => {
         <input
           className="px-1 grow border-b focus:outline-blue500 focus:outline-none placeholder:italic text-base"
           type="text"
+          ref={ref}
           value={value}
           placeholder={props.defaultText}
           onChange={handleChange}
@@ -71,6 +74,6 @@ const NewTextInput = (props: Prop) => {
       </div>
     </div>
   );
-};
+});
 
 export default NewTextInput;

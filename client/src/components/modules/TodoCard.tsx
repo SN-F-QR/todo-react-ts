@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { flushSync } from "react-dom";
 import { NewTodoInput } from "./NewTodoInput";
 import { Task as TaskDocument } from "../../../../shared/types";
 import { get, post, put, del } from "../../utilities";
@@ -17,19 +18,20 @@ const TodoCard = (props: Props) => {
   const [creatingNewTodo, setCreatingNewTodo] = useState<boolean>(false);
   const newTodoInputRef = useRef<HTMLInputElement>(null); // a reference to the create Todo field
   const switchCreating = () => {
-    setCreatingNewTodo(!creatingNewTodo);
-    if (!creatingNewTodo) {
-      // !!important!! use setTimeout to make sure the focus is set after the input is rendered
-      setTimeout(() => {
-        if (newTodoInputRef.current) {
-          newTodoInputRef.current.focus();
-        }
-      }, 0);
+    // !!important!! use flushSync to update the DOM immediately
+    flushSync(() => {
+      setCreatingNewTodo(!creatingNewTodo);
+    });
+    if (!creatingNewTodo && newTodoInputRef.current) {
+      newTodoInputRef.current.focus();
     }
   };
 
   const addNewTodo = (newTodo: TaskDocument) => {
     todos ? setTodos([...todos, newTodo]) : setTodos([newTodo]);
+    if (newTodoInputRef.current) {
+      newTodoInputRef.current.focus();
+    }
   };
 
   const updateTodo = (id: string, finished: boolean, title?: string) => {

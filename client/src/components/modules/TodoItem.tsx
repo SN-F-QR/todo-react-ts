@@ -10,6 +10,7 @@ type Props = {
   task: TaskDocument;
   updateFinished: (id: string, finished: boolean) => void;
   deleteTodo: (id: string) => void;
+  editing: boolean;
 };
 
 const TodoItem = (props: Props) => {
@@ -28,9 +29,11 @@ const TodoItem = (props: Props) => {
       <label className={`${props.task.finished ? "line-through" : ""} min-w-52 grow px-1`}>
         {props.task.title}
       </label>
-      <button className="w-6" onClick={handleDeleteEvent}>
-        🗑️
-      </button>
+      {props.editing && (
+        <button className="w-6" onClick={handleDeleteEvent}>
+          🗑️
+        </button>
+      )}
     </div>
   );
 };

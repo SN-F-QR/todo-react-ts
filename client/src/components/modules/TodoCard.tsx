@@ -27,6 +27,16 @@ const TodoCard = (props: Props) => {
     }
   };
 
+  const [editing, setEditing] = useState<boolean>(false);
+  const switchEditing = () => {
+    setEditing(!editing);
+  };
+
+  const editDone = () => {
+    setEditing(false);
+    setCreatingNewTodo(false);
+  };
+
   const addNewTodo = (newTodo: TaskDocument) => {
     todos ? setTodos([...todos, newTodo]) : setTodos([newTodo]);
     if (newTodoInputRef.current) {
@@ -95,6 +105,7 @@ const TodoCard = (props: Props) => {
         task={task}
         updateFinished={updateTodo}
         deleteTodo={deleteTodo}
+        editing={editing}
         key={task._id}
       ></TodoItem>
     ));
@@ -106,9 +117,17 @@ const TodoCard = (props: Props) => {
     <div className="flex-col">
       <div className="flex py-1 px-5 mt-1 text-lg font-semibold text-blue-300">
         <h3 className="text-wrap ">Study</h3>
-        <div className="flex ml-auto mr-1 space-x-3 items-center text-nowrap">
-          <button onClick={switchCreating}>+</button>
-          <p>...</p>
+        <div className="flex ml-auto mr-1 space-x-3 items-center text-nowrap content-center">
+          {!creatingNewTodo && <button onClick={switchCreating}>+</button>}
+          {!editing && <button onClick={switchEditing}>...</button>}
+          {(creatingNewTodo || editing) && (
+            <button
+              className="text-sm border rounded-lg border-solid border-gray-300 px-1  text-blue-300 hover:text-blue-500 shadow-sm"
+              onClick={editDone}
+            >
+              Done
+            </button>
+          )}
         </div>
       </div>
       <div className="mx-5 h-[1px] bg-gray-300"></div>

@@ -47,6 +47,9 @@ const NewTextInput = forwardRef((props: Prop, ref: React.ForwardedRef<HTMLInputE
   };
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    if (value === "") {
+      return;
+    }
     props.onSubmit(value);
     setValue("");
   };

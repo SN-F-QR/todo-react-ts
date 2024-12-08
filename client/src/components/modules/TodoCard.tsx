@@ -18,6 +18,9 @@ const TodoCard = (props: Props) => {
   const [creatingNewTodo, setCreatingNewTodo] = useState<boolean>(false);
   const newTodoInputRef = useRef<HTMLInputElement>(null); // a reference to the create Todo field
   const switchCreating = () => {
+    if (editing) {
+      return;
+    }
     // !!important!! use flushSync to update the DOM immediately
     flushSync(() => {
       setCreatingNewTodo(!creatingNewTodo);
@@ -29,6 +32,9 @@ const TodoCard = (props: Props) => {
 
   const [editing, setEditing] = useState<boolean>(false);
   const switchEditing = () => {
+    if (creatingNewTodo) {
+      return;
+    }
     setEditing(!editing);
   };
 
@@ -118,8 +124,12 @@ const TodoCard = (props: Props) => {
       <div className="flex py-1 px-5 mt-1 text-lg font-semibold text-blue-300">
         <h3 className="text-wrap ">Study</h3>
         <div className="flex ml-auto mr-1 space-x-3 items-center text-nowrap content-center">
-          {!creatingNewTodo && <button onClick={switchCreating}>+</button>}
-          {!editing && <button onClick={switchEditing}>...</button>}
+          {!creatingNewTodo && !editing && (
+            <>
+              <button onClick={switchCreating}>+</button>{" "}
+              <button onClick={switchEditing}>...</button>
+            </>
+          )}
           {(creatingNewTodo || editing) && (
             <button
               className="text-sm border rounded-lg border-solid border-gray-300 px-1  text-blue-300 hover:text-blue-500 shadow-sm"

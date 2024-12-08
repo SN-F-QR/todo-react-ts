@@ -1,4 +1,10 @@
 # todo-react-ts
-todo lists using react with ts
 
-Source code from https://github.com/weblab-workshops/todo-react
+Todo lists using react with TypeScript
+
+Source code of skeleton from https://github.com/weblab-workshops/todo-react
+
+## Features
+
+- Login using Google OAuth 2.0
+- Add / Delete Todo

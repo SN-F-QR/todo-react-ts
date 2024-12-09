@@ -1,9 +1,11 @@
 import express from "express";
 import auth from "./auth";
 import socketManager from "./server-socket";
+import { handleGet } from "./dataUtils";
 
 import Task from "./models/Task";
 import { Task as TaskInterface } from "../shared/types";
+import TaskParentModel, { TaskParent } from "./models/TaskParent";
 
 const router = express.Router();
 
@@ -34,11 +36,14 @@ router.get("/todos", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
+router.get("/todos/categories", auth.ensureLoggedIn, handleGet<TaskParent>(TaskParentModel));
+
 router.post("/todo", auth.ensureLoggedIn, (req, res) => {
   const newTask = new Task({
     creator_id: req.user!._id,
     title: req.body.title,
     finished: req.body.finished,
+    parent: req.body.parent,
     date: Date.now(),
   });
 
@@ -47,6 +52,21 @@ router.post("/todo", auth.ensureLoggedIn, (req, res) => {
     return res.send(task);
   };
   addTodo(newTask);
+});
+
+router.post("/todo/category", auth.ensureLoggedIn, async (req, res) => {
+  try {
+    const newCategory = new TaskParentModel({
+      creator_id: req.user!._id,
+      title: req.body.title,
+      parent: req.body.parent,
+      date: Date.now(),
+    });
+    const addedCategory = await newCategory.save();
+    return res.send(addedCategory);
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to add category" });
+  }
 });
 
 router.put("/todo/:id", auth.ensureLoggedIn, async (req, res) => {

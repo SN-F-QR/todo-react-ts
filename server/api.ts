@@ -29,9 +29,20 @@ router.post("/initsocket", (req, res) => {
 
 router.get("/taskfiles", auth.ensureLoggedIn, async (req, res) => {
   try {
-    const taskFiles: TaskFile[] | null = await models.TaskFileModel.find({
+    let taskFiles: TaskFile[] = await models.TaskFileModel.find({
       creator_id: req.user!._id,
     });
+    console.log("Length of taskFiles: ", taskFiles.length, "with name: ", taskFiles[0].name);
+    // if the first time user, create a default task file
+    if (taskFiles.length === 0) {
+      const initialTaskFIle = new models.TaskFileModel({
+        creator_id: req.user!._id,
+        name: "default",
+        date: Date.now(),
+      });
+      console.log("New user without task files");
+      taskFiles = [await initialTaskFIle.save()];
+    }
     return res.send(taskFiles);
   } catch (err) {
     return res.status(500).json({ error: "Failed to get task files" });

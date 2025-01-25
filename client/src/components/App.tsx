@@ -8,16 +8,18 @@ import Todo from "./pages/Todo";
 import SideBar from "./modules/SideBar";
 import { socket } from "../client-socket";
 import User from "../../../shared/User";
+import { TaskFile } from "../../../shared/types";
 import "../utilities.css";
 
 const App = () => {
   const [userId, setUserId] = useState<string | undefined>(undefined);
+  const [taskFiles, setTaskFiles] = useState<TaskFile[] | undefined>([]);
 
   useEffect(() => {
     get("/api/whoami")
       .then((user: User) => {
         if (user._id) {
-          // TRhey are registed in the database and currently logged in.
+          // They are registed in the database and currently logged in.
           setUserId(user._id);
         }
       })
@@ -27,6 +29,16 @@ const App = () => {
         })
       );
   }, []);
+
+  useEffect(() => {
+    get("/api/taskfiles")
+      .then((taskFiles: TaskFile[]) => {
+        setTaskFiles(taskFiles);
+      })
+      .catch((err) => {
+        console.log(`Failed to get task files with err info: ${err}`);
+      });
+  }, [userId]);
 
   /**
    * Get user's code from Google OAuth and send to server for exchange of token
@@ -52,10 +64,15 @@ const App = () => {
   return (
     <BrowserRouter>
       <div className="flex min-h-screen">
-        <SideBar userId={userId} handleLogin={handleLogin} handleLogout={handleLogout} />
+        <SideBar
+          userId={userId}
+          handleLogin={handleLogin}
+          handleLogout={handleLogout}
+          fileName={taskFiles!.length > 0 ? taskFiles![0].name : "Loading"}
+        />
         <div className="ml-48 w-full flex-auto flex-col gap-3 overflow-y-auto pt-5 px-20">
           <Routes>
-            <Route element={<Todo userId={userId} />} path="/" />
+            <Route element={<Todo userId={userId} taskFile={taskFiles![0]} />} path="/" />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>

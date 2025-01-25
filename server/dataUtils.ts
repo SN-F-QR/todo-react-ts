@@ -13,7 +13,7 @@ const handleGet =
     try {
       const items: T[] | null = await model.find({
         creator_id: req.user!._id,
-        parent: req.query.parent,
+        parent: req.params.parentid,
       });
       return res.send(items);
     } catch (err) {

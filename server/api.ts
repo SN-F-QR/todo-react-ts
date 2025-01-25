@@ -5,7 +5,7 @@ import { handleGet } from "./dataUtils";
 
 import Task from "./models/Task";
 import { Task as TaskInterface } from "../shared/types";
-import TaskParentModel, { TaskParent } from "./models/TaskParent";
+import models, { TaskParent, TaskFile } from "./models/TaskParent";
 
 const router = express.Router();
 
@@ -27,6 +27,17 @@ router.post("/initsocket", (req, res) => {
   res.send({});
 });
 
+router.get("/taskfiles", auth.ensureLoggedIn, async (req, res) => {
+  try {
+    const taskFiles: TaskFile[] | null = await models.TaskFileModel.find({
+      creator_id: req.user!._id,
+    });
+    return res.send(taskFiles);
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to get task files" });
+  }
+});
+
 router.get("/todos", auth.ensureLoggedIn, async (req, res) => {
   try {
     const todos: TaskInterface[] | null = await Task.find({ creator_id: req.user!._id });
@@ -35,8 +46,28 @@ router.get("/todos", auth.ensureLoggedIn, async (req, res) => {
     return res.status(500).json({ error: "Failed to get todos" });
   }
 });
+router.get("/todos/:parentid", auth.ensureLoggedIn, handleGet<TaskInterface>(Task));
 
-router.get("/todos/categories", auth.ensureLoggedIn, handleGet<TaskParent>(TaskParentModel));
+router.get(
+  "/todos/categories/:parentid",
+  auth.ensureLoggedIn,
+  handleGet<TaskParent>(models.TaskParentModel)
+);
+
+// post apis
+router.post("/taskfiles", auth.ensureLoggedIn, async (req, res) => {
+  try {
+    const newTaskFile = new models.TaskFileModel({
+      creator_id: req.user!._id,
+      name: req.body.name,
+      date: Date.now(),
+    });
+    const addedTaskFile = await newTaskFile.save();
+    return res.send(addedTaskFile);
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to add task file" });
+  }
+});
 
 router.post("/todo", auth.ensureLoggedIn, (req, res) => {
   const newTask = new Task({
@@ -56,7 +87,7 @@ router.post("/todo", auth.ensureLoggedIn, (req, res) => {
 
 router.post("/todo/category", auth.ensureLoggedIn, async (req, res) => {
   try {
-    const newCategory = new TaskParentModel({
+    const newCategory = new models.TaskParentModel({
       creator_id: req.user!._id,
       title: req.body.title,
       parent: req.body.parent,

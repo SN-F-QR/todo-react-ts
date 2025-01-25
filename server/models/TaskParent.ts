@@ -14,5 +14,18 @@ const TaskParentSchema = new Schema({
   parent: String,
 });
 
+export interface TaskFile extends Document {
+  creator_id: string;
+  name: string;
+  date: Date;
+}
+
+const TaskFileSchema = new Schema({
+  creator_id: String,
+  name: String,
+  date: Date,
+});
+
 const TaskParentModel = model<TaskParent>("TaskParent", TaskParentSchema);
-export default TaskParentModel;
+const TaskFileModel = model<TaskFile>("TaskFile", TaskFileSchema);
+export default { TaskParentModel, TaskFileModel };

@@ -3,6 +3,7 @@ import { Schema, model, Document } from "mongoose";
 export interface TaskParent extends Document {
   creator_id: string;
   title: string;
+  description: string;
   date: Date;
   parent: string;
 }
@@ -10,6 +11,7 @@ export interface TaskParent extends Document {
 const TaskParentSchema = new Schema({
   creator_id: String,
   title: String,
+  description: String,
   date: Date,
   parent: String,
 });

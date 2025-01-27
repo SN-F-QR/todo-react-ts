@@ -101,6 +101,7 @@ router.post("/todo/category", auth.ensureLoggedIn, async (req, res) => {
     const newCategory = new models.TaskParentModel({
       creator_id: req.user!._id,
       title: req.body.title,
+      description: req.body.description,
       parent: req.body.parent,
       date: Date.now(),
     });

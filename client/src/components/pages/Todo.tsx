@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { get, post, put, del } from "../../utilities";
-import { TaskParent, TaskFile } from "../../../../shared/types";
+import { TaskParent, TaskFile, Task } from "../../../../shared/types";
 import TodoCard from "../modules/TodoCard";
+import { NewCategoryInput } from "../modules/NewTodoInput";
 
 type Props = {
   userId?: string;
@@ -10,9 +11,11 @@ type Props = {
 
 const Todo = (props: Props) => {
   const [categories, setCategories] = useState<TaskParent[]>([]);
+  const [createModel, setCreateModel] = useState<boolean>(false);
 
+  // only update when the taskFile Id is known
   useEffect(() => {
-    if (props.userId) {
+    if (props.taskFile) {
       get(`/api/todos/categories/${props.taskFile!._id}`)
         .then((categories: TaskParent[]) => {
           setCategories(categories);
@@ -21,30 +24,60 @@ const Todo = (props: Props) => {
           console.log(`Failed to get categories: ${err}`);
         });
     }
-  }, []);
+  }, [props.taskFile]);
+
+  const addNewCardUI = (category: Task | TaskParent) => {
+    if ("description" in category) {
+      setCategories([...categories, category as TaskParent]);
+      setCreateModel(false);
+    }
+  };
+
+  const editDone = () => {
+    setCreateModel(false);
+  };
 
   const todoCardList = categories.map((category: TaskParent): React.JSX.Element => {
     return (
       <TodoCard
         userId={props.userId}
-        mainTaskId={category._id}
-        mainTaskTitle={category.title}
+        categoryId={category._id}
+        categoryTitle={category.title}
         key={category._id}
       />
     );
   });
 
   return (
-    <div className="min-h-full p-1 flex flex-col">
+    <div className="flex min-h-full flex-col space-y-2 pt-24">
       {props.userId && props.taskFile ? (
         <>
-          <p className="text-2xl">
+          <p className="text-4xl font-semibold">
             {props.taskFile.name.charAt(0).toUpperCase() + props.taskFile.name.slice(1)}
           </p>
+          <div className="align-left flex space-x-3 font-medium">
+            <button
+              disabled={createModel}
+              className="h-min rounded-full border border-solid border-gray-300 px-2 py-1 text-green-500 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+              onClick={() => setCreateModel(true)}
+            >
+              Create
+            </button>
+            <button className="h-min rounded-full border border-solid border-gray-300 px-2 py-1 text-gray-500 transition-colors hover:bg-gray-50">
+              Edit
+            </button>
+          </div>
+          {createModel && (
+            <NewCategoryInput
+              addTodo={addNewCardUI}
+              parentId={props.taskFile._id}
+              cancelEditModel={editDone}
+            />
+          )}
           {todoCardList}
         </>
       ) : (
-        <p className="italic font-semibold">Login to see your todos~</p>
+        <p className="font-semibold italic">Login to see your todos~</p>
       )}
     </div>
   );

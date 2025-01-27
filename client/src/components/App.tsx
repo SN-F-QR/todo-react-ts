@@ -15,6 +15,7 @@ const App = () => {
   const [userId, setUserId] = useState<string | undefined>(undefined);
   const [taskFiles, setTaskFiles] = useState<TaskFile[] | undefined>([]);
 
+  // useEffect executes from bottom to top!
   useEffect(() => {
     get("/api/whoami")
       .then((user: User) => {
@@ -34,6 +35,7 @@ const App = () => {
     get("/api/taskfiles")
       .then((taskFiles: TaskFile[]) => {
         setTaskFiles(taskFiles);
+        console.log(`Loaded Task files`);
       })
       .catch((err) => {
         console.log(`Failed to get task files with err info: ${err}`);
@@ -51,7 +53,6 @@ const App = () => {
       setUserId(user._id);
       post("/api/initsocket", { socketid: socket.id });
     });
-    console.log(`Logged in as `);
   };
 
   const handleLogout = () => {
@@ -70,7 +71,7 @@ const App = () => {
           handleLogout={handleLogout}
           fileName={taskFiles!.length > 0 ? taskFiles![0].name : "Loading"}
         />
-        <div className="ml-48 w-full flex-auto flex-col gap-3 overflow-y-auto pt-5 px-20">
+        <div className="ml-48 w-full flex-auto flex-col gap-3 overflow-y-auto px-20 pt-5">
           <Routes>
             <Route element={<Todo userId={userId} taskFile={taskFiles![0]} />} path="/" />
             <Route path="*" element={<NotFound />} />

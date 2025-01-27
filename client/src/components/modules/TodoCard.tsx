@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { flushSync } from "react-dom";
 import { NewTodoInput } from "./NewTodoInput";
-import { Task as TaskDocument } from "../../../../shared/types";
+import { Document } from "mongoose";
+import { Task, Task as TaskDocument, TaskParent } from "../../../../shared/types";
 import { get, post, put, del } from "../../utilities";
 import TodoItem from "./TodoItem";
 
@@ -9,7 +10,8 @@ type Tasks = Array<TaskDocument>; // remember the TaskDocument extends from Docu
 
 type Props = {
   userId?: string;
-  mainTaskId: string;
+  categoryId: string;
+  categoryTitle: string;
 };
 
 const TodoCard = (props: Props) => {
@@ -43,10 +45,12 @@ const TodoCard = (props: Props) => {
     setCreatingNewTodo(false);
   };
 
-  const addNewTodo = (newTodo: TaskDocument) => {
-    todos ? setTodos([...todos, newTodo]) : setTodos([newTodo]);
-    if (newTodoInputRef.current) {
-      newTodoInputRef.current.focus();
+  const addNewTodo = (newTodo: TaskDocument | TaskParent) => {
+    if ("finished" in newTodo) {
+      todos ? setTodos([...todos, newTodo as TaskDocument]) : setTodos([newTodo as TaskDocument]);
+      if (newTodoInputRef.current) {
+        newTodoInputRef.current.focus();
+      }
     }
   };
 
@@ -102,7 +106,7 @@ const TodoCard = (props: Props) => {
   }, [props.userId]);
 
   const emptyList: React.JSX.Element = (
-    <p className="italic font-semibold">Empty! Add a new TODO now~</p>
+    <p className="font-semibold italic">Empty! Add a new TODO now~</p>
   );
   let todoLists: React.JSX.Element[] = [emptyList];
   if (todos && todos.length > 0) {
@@ -121,18 +125,18 @@ const TodoCard = (props: Props) => {
 
   return (
     <div className="flex-col">
-      <div className="flex py-1 px-5 mt-1 text-lg font-semibold text-blue-300">
-        <h3 className="text-wrap ">Study</h3>
-        <div className="flex ml-auto mr-1 space-x-3 items-center text-nowrap content-center">
+      <div className="mt-1 flex px-5 py-1 text-lg font-semibold text-blue-300">
+        <h3 className="text-wrap">{props.categoryTitle}</h3>
+        <div className="ml-auto mr-1 flex content-center items-center space-x-3 text-nowrap">
           {!creatingNewTodo && !editing && (
             <>
-              <button onClick={switchCreating}>+</button>{" "}
+              <button onClick={switchCreating}>+</button>
               <button onClick={switchEditing}>...</button>
             </>
           )}
           {(creatingNewTodo || editing) && (
             <button
-              className="text-sm border rounded-lg border-solid border-gray-300 px-1  text-blue-300 hover:text-blue-500 shadow-sm"
+              className="rounded-lg border border-solid border-gray-300 px-1 text-sm text-blue-300 shadow-sm hover:text-blue-500"
               onClick={editDone}
             >
               Done
@@ -143,7 +147,14 @@ const TodoCard = (props: Props) => {
       <div className="mx-5 h-[1px] bg-gray-300"></div>
       <div className="pb-2"></div>
       {todoLists}
-      {creatingNewTodo && <NewTodoInput ref={newTodoInputRef} addTodo={addNewTodo}></NewTodoInput>}
+      {creatingNewTodo && (
+        <NewTodoInput
+          ref={newTodoInputRef}
+          addTodo={addNewTodo}
+          parentId={props.categoryId}
+          cancelEditModel={editDone}
+        ></NewTodoInput>
+      )}
     </div>
   );
 };

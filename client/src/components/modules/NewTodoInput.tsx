@@ -1,5 +1,6 @@
 import React, { forwardRef, useRef, useState } from "react";
-import { Task as TaskDocument } from "../../../../shared/types";
+import { Document } from "mongoose";
+import { Task as TaskDocument, TaskParent } from "../../../../shared/types";
 import { post } from "../../utilities";
 
 type TaskData = {
@@ -7,12 +8,20 @@ type TaskData = {
   finished: boolean;
 };
 
+type TaskCategoryData = {
+  title: string;
+  description: string;
+  parent: string;
+};
+
 /**
  * Component to create a new todo
  * @param {function} addTodo update the todo lists when adding
  */
 type NewTodoProps = {
-  addTodo: (todo: TaskDocument) => void;
+  addTodo: (todo: TaskDocument | TaskParent) => void;
+  parentId: string;
+  cancelEditModel: () => void;
 };
 export const NewTodoInput = forwardRef(
   (props: NewTodoProps, ref: React.ForwardedRef<HTMLInputElement | null>) => {
@@ -27,7 +36,37 @@ export const NewTodoInput = forwardRef(
       };
       postTodo(newTodo);
     };
-    return <NewTextInput ref={ref} defaultText="Create Todos..." onSubmit={postNewTodo} />;
+    return (
+      <NewTextInput
+        ref={ref}
+        defaultText="Create Todos..."
+        onSubmit={postNewTodo}
+        onCancel={props.cancelEditModel}
+      />
+    );
+  }
+);
+
+export const NewCategoryInput = forwardRef(
+  (props: NewTodoProps, ref: React.ForwardedRef<HTMLInputElement | null>) => {
+    const postNewCategory = (text: string) => {
+      const newCategory: TaskCategoryData = {
+        title: text,
+        description: "",
+        parent: props.parentId,
+      };
+      post("/api/todo/category", newCategory).then((res: TaskParent) => {
+        props.addTodo(res);
+      });
+    };
+    return (
+      <NewTextInput
+        ref={ref}
+        defaultText="Create Category..."
+        onSubmit={postNewCategory}
+        onCancel={props.cancelEditModel}
+      />
+    );
   }
 );
 
@@ -39,6 +78,7 @@ export const NewTodoInput = forwardRef(
 type Prop = {
   defaultText: string;
   onSubmit: (text: string) => void;
+  onCancel: () => void;
 };
 const NewTextInput = forwardRef((props: Prop, ref: React.ForwardedRef<HTMLInputElement | null>) => {
   const [value, setValue] = useState<string>("");
@@ -56,10 +96,10 @@ const NewTextInput = forwardRef((props: Prop, ref: React.ForwardedRef<HTMLInputE
 
   return (
     <div className="">
-      <div className="flex px-5 py-3 justify-between space-x-1 items-center h-4">
-        <button className="border border-dotted border-black rounded-sm h-4 w-4 hover:cursor-default"></button>
+      <div className="flex h-4 items-center justify-between space-x-1 px-5 py-3">
+        <button className="h-4 w-4 rounded-sm border border-dotted border-black hover:cursor-default"></button>
         <input
-          className="px-1 grow border-b focus:outline-blue500 focus:outline-none placeholder:italic text-base"
+          className="focus:outline-blue500 grow border-b px-1 text-base placeholder:italic focus:outline-none"
           type="text"
           ref={ref}
           value={value}
@@ -67,12 +107,18 @@ const NewTextInput = forwardRef((props: Prop, ref: React.ForwardedRef<HTMLInputE
           onChange={handleChange}
         />
         <button
-          className="h-6 border rounded-lg border-solid border-gray-300 px-2 shadow-md text-green-400 hover:text-green-600"
+          className="py-min rounded-full border border-solid border-gray-300 px-2 font-medium text-green-500 hover:bg-gray-50"
           type="submit"
           onClick={handleSubmit}
-          value="Add"
         >
           Add
+        </button>
+        <button
+          className="py-min rounded-full border border-solid border-gray-300 px-2 font-medium text-red-500 hover:bg-gray-50"
+          type="button"
+          onClick={props.onCancel}
+        >
+          Cancel
         </button>
       </div>
     </div>

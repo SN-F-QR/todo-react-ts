@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  todo-react-ts:
+    image: todo-react-ts
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./.env

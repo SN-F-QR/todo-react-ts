@@ -4,3 +4,4 @@ client/dist/bundle.js.LICENSE.txt
 node_modules/
 .env
 tailwindcss-test.html
+*.DS_Store
